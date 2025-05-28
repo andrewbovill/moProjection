@@ -51,16 +51,44 @@
 !     The total number of parallel waves in x,y,z or z direction.
 !     Averaging should be over all three directions NOT the number of total
 !     waves. The old way of doing it doesn't make any sense.
+!
+!     AJB Update May 21st, comments about orientation averaging for each 
+!     Point group
+!     (||) = Parallel      =  2
+!     (o)  = Parallel      =  0
+!     (-|) = Perpendicular = -1
       select case(pointGroup)
       case('D2H')
         PAD_weight = [0.0,2.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0] 
       case('C2V')
-        PAD_weight = [0.0,1.666,0.0,0.0,0.0]
+        ! A1 = z = 1 (||) pz, 1 (o) s
+        !    = x = 1 (||) px
+        !    = y = 1 (||) py
+        ! Total A1 (avg): 1.666
+        ! A2 = z = null (l.ge.1)
+        !    = x = 1 (-|) px
+        !    = y = 1 (-|) py
+        ! Total A2 (avg): -1.0 
+        ! B1 = z = 1 (-|)  px
+        !    = x = 1 (-|) pz , 1 (o) s 
+        !    = y = null (l.ge.1)
+        ! Total B1 (avg): -0.75
+        ! B2 = z = 1 (-|)  py
+        !    = x = null (l.ge.1)
+        !    = y = 1 (-|) pz , 1 (o) s 
+        ! Total B2 (avg): -0.75
+        PAD_weight = [0.0,1.666,-1.0,-0.75,-0.75]
       case('CS')
-        !Depedent on angular momentum pop.... theory problem as Hrant.
-        PAD_weight = [0.0,2.0,0.0,0.0]
+        ! A'  = z = 1 (||) pz 
+        !     = x = 1 (||) px, 2(o) s, 1 (-|) py 
+        !     = y = 1 (||) py, 2(o) s, 1 (-|) px 
+        ! Total A' (avg): 0.888
+        ! A'' = z = 1 (o) s, 2 (-|) py px 
+        !     = x = 2 (-|) py pz
+        !     = y = 2 (-|) px pz
+        ! Total A'' (avg): -0.888
+        PAD_weight = [0.0,0.888,-0.888]
       case('C2h')
-        !Depedent on angular momentum pop.... theory problem as Hrant.
         PAD_weight = [0.0,2.0,0.0,0.0]
       case default
         call mqc_error('Unknown pointGroup.')
@@ -219,3 +247,4 @@
       end function Calc_PSP_PAD
 
       end module moProjection_mod
+
