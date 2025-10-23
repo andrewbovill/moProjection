@@ -135,6 +135,7 @@ INCLUDE 'moProjection_mod.f03'
       if(nFafs.eq.3) then
         call faf3%getArray('FILE 563 INTEGERS',mqcVarOut=mqcTmp)
         call faf3%getArray('FILE 564 INTEGERS',mqcVarOut=mqcTmp1)
+        irrepMOsAlpha = mqcTmp
       else
         call faf1%getArray('FILE 563 INTEGERS',mqcVarOut=mqcTmp)
         call faf1%getArray('FILE 564 INTEGERS',mqcVarOut=mqcTmp1)
@@ -144,7 +145,7 @@ INCLUDE 'moProjection_mod.f03'
         call mqcTmp1%print(header='File 564 Integers')
       endIf
       irrepMOsAlpha = mqcTmp
-      irrepMOsBeta = mqcTmp
+      irrepMOsBeta = mqcTmp1
       nMOSymms = maxVal(irrepMOsAlpha)
       if(DEBUG) write(iOut,*)' nMOSymms = ',nMOSymms
 !
@@ -162,6 +163,7 @@ INCLUDE 'moProjection_mod.f03'
       mqcTmp = MatMul(Transpose(moCoefficients1alpha),MatMul(aoOverlap,moCoefficients2alpha))
       if(Allocated(moIrrepPops)) deAllocate(moIrrepPops)
       Allocate(moIrrepPops(0:nMOSymms))
+!     write (*,*) "Size of moIrrepPops", Size(moIrrepPops)
       do i = 1,Size(mqcTmp,2)
         mqcTmp1 = mqcTmp%column(i)
         write(*,*)' ALPHA Column ',i
@@ -193,7 +195,6 @@ INCLUDE 'moProjection_mod.f03'
           write(iOut,2050) Calc_PSP_PAD(moIrrepPops,PAD_weights,Size(moIrrepPops))
         case('CS','Cs')
           write(iOut,2010)
-          write(*,*) Size(moIrrepPops(1:))
           do j = 1,Size(moIrrepPops(1:))
             write(iOut,2020) TRIM(pointGroupIrrepNameCs(j)),moIrrepPops(j)
           endDo
